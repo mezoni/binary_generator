@@ -1,0 +1,14 @@
+name: binary_generator
+version: 0.0.1
+author: Andrew Mezoni <andrew.mezoni@gmail.com>
+description: Binary generator is a tool (set of generators) that allows generate a development code for the binary interop and binary types.
+homepage: https://github.com/mezoni/binary_generator
+dependencies:
+  args_helper: any
+  binary_declarations: any
+  path: any
+  strings: any
+  template_block: any
+  yaml: any
+dev_dependencies:
+  unittest: any
