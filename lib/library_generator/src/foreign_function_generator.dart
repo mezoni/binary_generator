@@ -29,11 +29,15 @@ if ({{PARAMS_NAME}} != null) {
 
 return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
+  final ClassLibraryGenerator classGenerator;
+
   final FunctionDeclaration declaration;
 
-  ForeignFunctionGenerator(this.declaration) {
-    if (declaration == null) {
-      throw new ArgumentError.notNull("declartion");
+  TypeConverter _typeConverter;
+
+  ForeignFunctionGenerator(this.classGenerator, this.declaration) {
+    if (classGenerator == null) {
+      throw new ArgumentError.notNull("classGenerator");
     }
 
     addTemplate(_TEMPLATE, _template);
@@ -45,6 +49,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
+    _typeConverter = new TypeConverter();
     var names = new Set<String>();
     var arguments = <String>[];
     var parameters = <String>[];
@@ -52,24 +57,25 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     var variadic = false;
     for (var parameter in declaration.parameters) {
       if (parameter.type is VaListTypeSpecification) {
-        params = _getName(params, names);
+        params = _typeConverter.createName(params, names, prefix: "arg");
         parameters.add("[List params]");
         variadic = true;
       } else {
-        var name = _getName(parameter.name, names);
-        var type = _getType(parameter.type, "");
+        var name = _typeConverter.createName(parameter.name, names);
+        var type = getType(parameter.type);
         arguments.add(name);
-        if (!type.isEmpty) {
-          type += " ";
+        var string = name;
+        if (type != null) {
+          string = "$type $name";
         }
 
-        parameters.add("$type$name");
+        parameters.add(string);
       }
     }
 
     block.assign("NAME", name);
     block.assign("COMMENT", declaration);
-    block.assign("RETURN_TYPE", _getType(declaration.returnType, "dynamic"));
+    block.assign("RETURN_TYPE", getType(declaration.returnType, "dynamic"));
     block.assign("PARAMETERS", parameters.join(", "));
 
     //
@@ -89,41 +95,13 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     return block.process();
   }
 
-  String _getName(String name, Set<String> used) {
-    if (name != null && !name.isEmpty) {
-      if (!used.contains(name)) {
-        used.add(name);
-        return name;
-      }
-    }
-
-    var prefix = "arg";
-    var index = 0;
-    while (true) {
-      name = "$prefix$index";
-      index++;
-      if (!used.contains(name)) {
-        used.add(name);
-        return name;
-      }
-    }
-  }
-
-  String _getType(TypeSpecification type, String result) {
-    if (type is IntegerTypeSpecification) {
-      result = "int";
-    } else if (type is FloatTypeSpecification) {
-      result = "double";
-      // } else if (returnType is VoidTypeSpecification) {
-      // value = "void";
-    } else if (type is StructureTypeSpecification) {
-      result = "Map";
-    } else if (type is TypedefTypeSpecification) {
-      switch (type.name) {
-        case "size_t":
-          result = "int";
-          break;
-      }
+  String getType(TypeSpecification type, [String defaultType]) {
+    String result;
+    var dartType = _typeConverter.getDartTypeAdvanced(type, classGenerator.types);
+    if (dartType == null) {
+      result = defaultType;
+    } else {
+      result = dartType.toString();
     }
 
     return result;

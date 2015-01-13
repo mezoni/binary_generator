@@ -7,31 +7,40 @@ class ClassLibraryGenerator extends ClassGenerator {
 
   LibraryGeneratorOptions _options;
 
-  final BinaryDeclarations declarations;
+  final ScriptGenerator scriptGenerator;
 
-  ClassLibraryGenerator(this.declarations, LibraryGeneratorOptions options) : super(options.name) {
+  ClassLibraryGenerator(this.scriptGenerator, LibraryGeneratorOptions options) : super(options.name) {
     if (options == null) {
       throw new ArgumentError.notNull("options");
-    }
-
-    if (declarations == null) {
-      throw new ArgumentError.notNull("declarations");
     }
 
     _options = options;
   }
 
+  BinaryDeclarations get declarations => scriptGenerator.declarations;
+
+  BinaryTypes get types => scriptGenerator.types;
+
   List<String> generate() {
+    var symbols = <String>[];
     for (var declaration in declarations) {
       if (declaration is FunctionDeclaration) {
-        var generator = new ForeignFunctionGenerator(declaration);
+        var generator = new ForeignFunctionGenerator(this, declaration);
         addMethod(generator);
+        symbols.add(declaration.name);
       }
     }
 
-    addConstructor(new ConstructorGenerator(declarations, _options));
-    addConstant(new VariableGenerator(ClassLibraryGenerator.HEADER, "String", value: "'''\n${_options.header}'''"));
+    // Constructor
+    addConstructor(new ConstructorGenerator(this, _options));
+
+    // HEADER
+    var value  = "'''\n${_options.header}'''";
+    addConstant(new VariableGenerator(ClassLibraryGenerator.HEADER, "String", value: value));
+
+    // LIBRARY
     addVariable(new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));
+
     return super.generate();
   }
 }

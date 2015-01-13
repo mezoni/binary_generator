@@ -14,6 +14,10 @@ import "package:binary_interop/binary_interop.dart";
 
   final LibraryGeneratorOptions options;
 
+  BinaryDeclarations _declarations;
+
+  BinaryTypes _types;
+
   Map<String, List<String>> _classes;
 
   ScriptGenerator(this.options) {
@@ -25,6 +29,10 @@ import "package:binary_interop/binary_interop.dart";
     _classes = <String, List<String>>{};
   }
 
+  BinaryDeclarations get declarations => _declarations;
+
+  BinaryTypes get types => _types;
+
   void addClass(DeclarationGenerator declaration) {
     if (declaration == null) {
       throw new ArgumentError("declaration: $declaration");
@@ -35,8 +43,16 @@ import "package:binary_interop/binary_interop.dart";
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var declarations = new BinaryDeclarations(options.header);
-    var classLibraryGenerator = new ClassLibraryGenerator(declarations, options);
+    var header = options.header;
+    _declarations = new BinaryDeclarations(options.header);
+    try {
+      _types = new BinaryTypes();
+      _types.declare(header);
+    } catch (e) {
+      _types = null;
+    }
+
+    var classLibraryGenerator = new ClassLibraryGenerator(this, options);
     addClass(classLibraryGenerator);
     _generateDeclarations(block, "#CLASSES", _classes);
     return block.process();

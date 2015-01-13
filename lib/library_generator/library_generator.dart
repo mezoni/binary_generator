@@ -2,6 +2,8 @@ library binary_generator.library_generator;
 
 import "package:binary_declarations/binary_declarations.dart";
 import "package:binary_generator/internal/generators/generators.dart";
+import "package:binary_generator/internal/type_converter/type_converter.dart";
+import "package:binary_types/binary_types.dart";
 import "package:template_block/template_block.dart";
 
 part 'src/constructor_generator.dart';

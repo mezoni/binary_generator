@@ -16,18 +16,20 @@ class ConstructorGenerator extends DeclarationGenerator {
     throw new ArgumentError.notNull("library");
   }
 
-  library.declare($_HEADER);  
+  library.declare($_HEADER);
   $_LIBRARY = library;
 }
 ''';
 
-  final BinaryDeclarations declarations;
+  BinaryDeclarations _declarations;
+
+  final ClassLibraryGenerator classGenerator;
 
   final LibraryGeneratorOptions options;
 
-  ConstructorGenerator(this.declarations, this.options) {
-    if (declarations == null) {
-      throw new ArgumentError.notNull("declarations");
+  ConstructorGenerator(this.classGenerator, this.options) {
+    if (classGenerator == null) {
+      throw new ArgumentError.notNull("classGenerator");
     }
 
     if (options == null) {
@@ -37,43 +39,13 @@ class ConstructorGenerator extends DeclarationGenerator {
     addTemplate(_TEMPLATE, _template);
   }
 
+  BinaryDeclarations get declarations => classGenerator.declarations;
+
   String get name => options.name;
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     block.assign("NAME", name);
     return block.process();
-  }
-
-  String _getName(String name, Set<String> used) {
-    if (name != null && !name.isEmpty) {
-      if (!used.contains(name)) {
-        used.add(name);
-        return name;
-      }
-    }
-
-    var prefix = "arg";
-    var index = 0;
-    while (true) {
-      name = "$prefix$index";
-      index++;
-      if (!used.contains(name)) {
-        used.add(name);
-        return name;
-      }
-    }
-  }
-
-  String _getType(TypeSpecification type, String result) {
-    if (type is IntegerTypeSpecification) {
-      result = "int";
-      // } else if (returnType is VoidTypeSpecification) {
-      // value = "void";
-    } else if (type is StructureTypeSpecification) {
-      result = "Map";
-    }
-
-    return result;
   }
 }

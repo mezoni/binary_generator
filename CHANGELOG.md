@@ -1,3 +1,7 @@
+## 0.0.2
+
+- Library generator now utilizes the features of `binary types` not only `binary declarations`. For the better type resolutions now generator tries to declare the its own copy of the `binary types` directly from the `binary declarations`  
+
 ## 0.0.1
 
 - Initial release
