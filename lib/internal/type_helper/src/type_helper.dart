@@ -11,7 +11,6 @@ class TypeHelper {
       }
     }
 
-
     if (prefix == null) {
       prefix = name;
     }

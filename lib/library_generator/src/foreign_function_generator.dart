@@ -61,7 +61,12 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
         parameters.add("[List params]");
         variadic = true;
       } else {
-        var name = _typeHelper.createName(parameter.identifier.name, names);
+        String name;
+        if (parameter.identifier != null) {
+          name = parameter.identifier.name;
+        }
+
+        name = _typeHelper.createName(name, names, prefix: "arg");
         var type = _getType(parameter.type);
         arguments.add(name);
         var string = name;

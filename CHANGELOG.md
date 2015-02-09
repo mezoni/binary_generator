@@ -1,15 +1,16 @@
 ## 0.0.5
 
-- Added new generator `TypesGenerator`. The generator allows to generate the `binary types` from the textual format supported by the `binary_declarations`. The declarations "typedef"  will be represented as the members of the generated class `binary types`   
+- Fixed bug in `ForeignFunctionGenerator` with the function declarations with the abstract parameters (without the name)  
 
 ## 0.0.4
 
+- Added new generator `TypesGenerator`. The generator allows to generate the `binary types` from the textual format supported by the `binary_declarations`. The declarations "typedef"  will be represented as the members of the generated class `binary types`
 - Made adaptations to the new version of package `binary_declarations`
 - Made adaptations to the new version of package `binary_types`
 
 ## 0.0.3
 
-- Fixec bug in `ForeignFunctionGenerator`
+- Fixed bug in `ForeignFunctionGenerator`
 
 ## 0.0.2
 
