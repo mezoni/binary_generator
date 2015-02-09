@@ -1,6 +1,10 @@
+## 0.0.6
+
+- Added support of the functions which started with the "_" (underscore) in the library generator. Now they are prefixed with the "$" (dollar sign) in the generated Dart code   
+
 ## 0.0.5
 
-- Fixed bug in `ForeignFunctionGenerator` with the function declarations with the abstract parameters (without the name)  
+- Fixed bug in `ForeignFunctionGenerator` with the function declarations with the abstract parameters (without the name)
 
 ## 0.0.4
 

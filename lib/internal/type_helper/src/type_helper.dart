@@ -26,25 +26,6 @@ class TypeHelper {
     }
   }
 
-  Type getDartTypeAdvanced(TypeSpecification type, BinaryTypes types, {bool allowBinary: false}) {
-    if (type == null) {
-      throw new ArgumentError.notNull("type");
-    }
-
-    if (types != null) {
-      try {
-        var name = tryGetTypeSpecificationName(type);
-        if (name != null) {
-          return getDartTypeForBinaryType(types[name], allowBinary: allowBinary);
-        }
-
-      } catch (e) {
-      }
-    }
-
-    return getDartTypeForTypeSpecification(type);
-  }
-
   Type getDartTypeForBinaryType(BinaryType type, {bool allowBinary: false}) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
@@ -92,23 +73,58 @@ class TypeHelper {
     }
 
     Type result;
-    if (type is IntegerTypeSpecification) {
-      result = int;
-    } else if (type is FloatTypeSpecification) {
-      result = double;
-    } else if (type is StructureTypeSpecification) {
-      result = Map;
-    } else if (type is EnumTypeSpecification) {
-      result = int;
-    } else if (type is ArrayTypeSpecification) {
-      result = List;
-    } else if (type is DefinedTypeSpecification) {
-      switch (type.name) {
-        case "intptr_t":
-        case "size_t":
-          result = int;
-          break;
-      }
+    switch (type.typeKind) {
+      case TypeSpecificationKind.ARRAY:
+        result = List;
+        break;
+      case TypeSpecificationKind.DEFINED:
+        break;
+      case TypeSpecificationKind.ENUM:
+        result = int;
+        break;
+      case TypeSpecificationKind.FLOAT:
+        result = double;
+        break;
+      case TypeSpecificationKind.INTEGER:
+        result = int;
+        break;
+      case TypeSpecificationKind.STRUCTURE:
+        result = Map;
+        break;
+    }
+
+    return result;
+  }
+
+  String getTypeSpecificationName(TypeSpecification type) {
+    if (type == null) {
+      throw new ArgumentError.notNull("type");
+    }
+
+    String result;
+    switch (type.typeKind) {
+      case TypeSpecificationKind.DEFINED:
+      case TypeSpecificationKind.FLOAT:
+      case TypeSpecificationKind.INTEGER:
+      case TypeSpecificationKind.TAGGED:
+        result = type.name;
+        break;
+      case TypeSpecificationKind.ENUM:
+        var structureType = type as EnumTypeSpecification;
+        var taggedType = structureType.taggedType;
+        if (taggedType.tag != null) {
+          result = taggedType.name;
+        }
+
+        break;
+      case TypeSpecificationKind.STRUCTURE:
+        var structureType = type as StructureTypeSpecification;
+        var taggedType = structureType.taggedType;
+        if (taggedType.tag != null) {
+          result = taggedType.name;
+        }
+
+        break;
     }
 
     return result;
@@ -122,35 +138,22 @@ class TypeHelper {
     return _reservedWords.contains(name);
   }
 
-  String tryGetTypeSpecificationName(TypeSpecification type) {
+  Type tryGetDartTypeAdvanced(TypeSpecification type, BinaryTypes types, {bool allowBinary: false}) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
     }
 
-    String result;
-    if (type is DefinedTypeSpecification) {
-      result = type.name;
-    } else if (type is IntegerTypeSpecification) {
-      result = type.name;
-    } else if (type is FloatingPointType) {
-      result = type.name;
-    } else if (type is StructureTypeSpecification) {
-      StructureTypeSpecification structureType = type;
-      var taggedType = structureType.taggedType;
-      if (taggedType.tag != null) {
-        result = taggedType.name;
-      }
+    if (types != null) {
+      try {
+        var name = getTypeSpecificationName(type);
+        if (name != null) {
+          return getDartTypeForBinaryType(types[name], allowBinary: allowBinary);
+        }
 
-    } else if (type is EnumTypeSpecification) {
-      EnumTypeSpecification structureType = type;
-      var taggedType = structureType.taggedType;
-      if (taggedType.tag != null) {
-        result = taggedType.name;
+      } catch (e) {
       }
-    } else if (type is TaggedTypeSpecification) {
-      result = type.name;
     }
 
-    return result;
+    return getDartTypeForTypeSpecification(type);
   }
 }

@@ -33,7 +33,7 @@ class ClassLibraryGenerator extends ClassGenerator {
     addConstructor(new ConstructorGenerator(this, _options));
 
     // HEADER
-    var value  = "'''\n${_options.header}'''";
+    var value = "'''\n${_options.header}'''";
     addConstant(new VariableGenerator(ClassLibraryGenerator.HEADER, "String", value: value));
 
     // LIBRARY

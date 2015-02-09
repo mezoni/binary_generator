@@ -45,7 +45,7 @@ class GetterTypeGenerator extends DeclarationGenerator {
 
   String getType(TypeSpecification type, [String defaultType]) {
     String result;
-    var dartType = _typeHelper.getDartTypeAdvanced(type, classGenerator.types);
+    var dartType = _typeHelper.tryGetDartTypeAdvanced(type, classGenerator.types);
     if (dartType == null) {
       result = defaultType;
     } else {

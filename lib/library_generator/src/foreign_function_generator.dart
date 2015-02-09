@@ -35,9 +35,16 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
   TypeHelper _typeHelper;
 
+  String _name;
+
   ForeignFunctionGenerator(this.classGenerator, this.declaration) {
     if (classGenerator == null) {
       throw new ArgumentError.notNull("classGenerator");
+    }
+
+    _name = declaration.identifier.name;
+    if (_name.startsWith("_")) {
+      _name = "\$$name";
     }
 
     addTemplate(_TEMPLATE, _template);
@@ -45,7 +52,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     addTemplate(_TEMPLATE_BODY_VARIADIC, _templateBodyVariadic);
   }
 
-  String get name => declaration.identifier.name;
+  String get name => _name;
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
@@ -98,7 +105,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     }
 
     blockBody.assign("ARGUMENTS", arguments.join(", "));
-    blockBody.assign("NAME", name);
+    blockBody.assign("NAME", declaration.identifier.name);
 
     //
     block.assign("#BODY", blockBody.process());
@@ -107,7 +114,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
   String _getType(TypeSpecification type, [String defaultType]) {
     String result;
-    var dartType = _typeHelper.getDartTypeAdvanced(type, classGenerator.types);
+    var dartType = _typeHelper.tryGetDartTypeAdvanced(type, classGenerator.types);
     if (dartType == null) {
       result = defaultType;
     } else {
