@@ -1,6 +1,6 @@
 part of binary_generator.internal.type_converter;
 
-class TypeConverter {
+class TypeHelper {
   static final Set<String> _reservedWords = new Set<String>.from(["assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else", "enum", "extends", "false", "ﬁnal", "ﬁnally", "for", "if", "in", "is", "new", "null", "rethrow", "return", "super", "switch", "this", "throw", "true", "try", "var", "void", "while", "with"]);
 
   String createName(String name, Set<String> used, {String prefix}) {
@@ -103,7 +103,7 @@ class TypeConverter {
       result = int;
     } else if (type is ArrayTypeSpecification) {
       result = List;
-    } else if (type is TypedefTypeSpecification) {
+    } else if (type is DefinedTypeSpecification) {
       switch (type.name) {
         case "intptr_t":
         case "size_t":
@@ -115,33 +115,41 @@ class TypeConverter {
     return result;
   }
 
+  bool isReservedWord(String name) {
+    if (name == null) {
+      throw new ArgumentError.notNull("name");
+    }
+
+    return _reservedWords.contains(name);
+  }
+
   String tryGetTypeSpecificationName(TypeSpecification type) {
     if (type == null) {
       throw new ArgumentError.notNull("type");
     }
 
     String result;
-    if (type is TypedefTypeSpecification) {
+    if (type is DefinedTypeSpecification) {
       result = type.name;
     } else if (type is IntegerTypeSpecification) {
-      result = type.toString();
+      result = type.name;
     } else if (type is FloatingPointType) {
-      result = type.toString();
+      result = type.name;
     } else if (type is StructureTypeSpecification) {
       StructureTypeSpecification structureType = type;
       var taggedType = structureType.taggedType;
       if (taggedType.tag != null) {
-        result = taggedType.toString();
+        result = taggedType.name;
       }
 
     } else if (type is EnumTypeSpecification) {
       EnumTypeSpecification structureType = type;
       var taggedType = structureType.taggedType;
       if (taggedType.tag != null) {
-        result = taggedType.toString();
+        result = taggedType.name;
       }
     } else if (type is TaggedTypeSpecification) {
-      result = type.toString();
+      result = type.name;
     }
 
     return result;

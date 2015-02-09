@@ -18,6 +18,8 @@ class {{CLASSNAME}} {
 }
 ''';
 
+  final String interfaces;
+
   final String name;
 
   List<List<String>> _code;
@@ -40,7 +42,7 @@ class {{CLASSNAME}} {
 
   Map<String, List<String>> _variables;
 
-  ClassGenerator(this.name) {
+  ClassGenerator(this.name, {this.interfaces}) {
     if (name == null || name.isEmpty) {
       throw new ArgumentError("name: $name");
     }
@@ -128,7 +130,12 @@ class {{CLASSNAME}} {
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    block.assign("CLASSNAME", name);
+    var fullName = name;
+    if (interfaces != null) {
+      fullName = "$name $interfaces";
+    }
+
+    block.assign("CLASSNAME", fullName);
     _generateDeclarations(block, "#CONSTANTS", _constants);
     _generateDeclarations(block, "#CONSTRUCTORS", _constructors);
     _generateDeclarations(block, "#METHODS", _methods);

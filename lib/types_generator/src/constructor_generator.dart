@@ -1,31 +1,25 @@
-part of binary_generator.library_generator;
+part of binary_generator.types_generator;
 
 class ConstructorGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "_TEMPLATE";
 
-  static const String _HEADER = ClassLibraryGenerator.HEADER;
-
-  static const String _LIBRARY = ClassLibraryGenerator.LIBRARY;
+  static const String _HEADER = ClassTypesGenerator.HEADER;
 
   static final String _template = '''
 /**
  *
  */
-{{NAME}}(DynamicLibrary library) {
-  if (library == null) {
-    throw new ArgumentError.notNull("library");
-  }  
-  
-  library.declare($_HEADER);
-  $_LIBRARY = library;
+{{NAME}}({DataModel dataModel, BinaryTypes types}) : super(dataModel: dataModel, types: types) {
+  var helper = new BinaryTypeHelper(this);
+  helper.declare($_HEADER);  
 }
 ''';
 
   Declarations _declarations;
 
-  final ClassLibraryGenerator classGenerator;
+  final ClassTypesGenerator classGenerator;
 
-  final LibraryGeneratorOptions options;
+  final TypesGeneratorOptions options;
 
   ConstructorGenerator(this.classGenerator, this.options) {
     if (classGenerator == null) {

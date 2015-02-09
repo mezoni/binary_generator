@@ -3,7 +3,7 @@ binary_generator
 
 Binary generator is a tool (set of generators) that allows generate a development code for the binary interop and binary types.
 
-Version: 0.0.2
+Version: 0.0.4
 
 [Donate to binary generator for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.generator.for.dart&currency_code=USD)
 
@@ -16,7 +16,8 @@ Version: 0.0.2
 
 **Features**
 
-- Generating library wrappers from special header files (function wrappers)
+- Generating the binary types (types generator)
+- Generating the wrappers for the dynamic loadable libraries (library generator)
 
 **Planned features**
 

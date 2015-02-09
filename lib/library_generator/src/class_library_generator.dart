@@ -17,17 +17,15 @@ class ClassLibraryGenerator extends ClassGenerator {
     _options = options;
   }
 
-  BinaryDeclarations get declarations => scriptGenerator.declarations;
+  Declarations get declarations => scriptGenerator.declarations;
 
   BinaryTypes get types => scriptGenerator.types;
 
   List<String> generate() {
-    var symbols = <String>[];
     for (var declaration in declarations) {
       if (declaration is FunctionDeclaration) {
         var generator = new ForeignFunctionGenerator(this, declaration);
         addMethod(generator);
-        symbols.add(declaration.name);
       }
     }
 

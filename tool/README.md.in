@@ -16,7 +16,8 @@ Version: {{VERSION}}
 
 **Features**
 
-- Generating library wrappers from special header files (function wrappers)
+- Generating the binary types (types generator)
+- Generating the wrappers for the dynamic loadable libraries (library generator)
 
 **Planned features**
 
