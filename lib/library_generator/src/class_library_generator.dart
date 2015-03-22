@@ -9,7 +9,7 @@ class ClassLibraryGenerator extends ClassGenerator {
 
   final ScriptGenerator scriptGenerator;
 
-  ClassLibraryGenerator(this.scriptGenerator, LibraryGeneratorOptions options) : super(options.name) {
+  ClassLibraryGenerator(this.scriptGenerator, LibraryGeneratorOptions options) : super(options.name, suffix: "extends BinaryTypes") {
     if (options == null) {
       throw new ArgumentError.notNull("options");
     }
@@ -22,8 +22,22 @@ class ClassLibraryGenerator extends ClassGenerator {
   BinaryTypes get types => scriptGenerator.types;
 
   List<String> generate() {
+    var names = new Set<String>();
+    var typeHelper = new TypeHelper();
     for (var declaration in declarations) {
-      if (declaration is FunctionDeclaration) {
+      if (declaration is TypedefDeclaration) {
+        for (var declarator in declaration.declarators.elements) {
+          var name = declarator.identifier.name;
+          if (!names.contains(name)) {
+            if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
+              var generator = new GetterTypeGenerator(this, declarator, name);
+              addMethod(generator);
+            }
+
+            names.add(name);
+          }
+        }
+      } else if (declaration is FunctionDeclaration) {
         var generator = new ForeignFunctionGenerator(this, declaration);
         addMethod(generator);
       }

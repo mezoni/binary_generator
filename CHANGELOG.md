@@ -1,6 +1,14 @@
+## 0.0.8
+
+- Impovements in `LibraryGenerator`   
+
+## 0.0.7
+
+- Made adaptations to the new version of package `binary_declarations`
+
 ## 0.0.6
 
-- Added support of the functions which started with the "_" (underscore) in the library generator. Now they are prefixed with the "$" (dollar sign) in the generated Dart code   
+- Added support of the functions which started with the "_" (underscore) in the library generator. Now they are prefixed with the "$" (dollar sign) in the generated Dart code
 
 ## 0.0.5
 

@@ -9,9 +9,9 @@ class ConstructorGenerator extends DeclarationGenerator {
 /**
  *
  */
-{{NAME}}({DataModel dataModel, BinaryTypes types}) : super(dataModel: dataModel, types: types) {
+{{NAME}}({DataModel dataModel, BinaryTypes types, Map<String, String> environment}) : super(dataModel: dataModel, types: types) {
   var helper = new BinaryTypeHelper(this);
-  helper.declare($_HEADER);  
+  helper.declare($_HEADER, environment: environment);  
 }
 ''';
 

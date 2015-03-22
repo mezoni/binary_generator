@@ -1,4 +1,4 @@
-part of binary_generator.types_generator;
+part of binary_generator.library_generator;
 
 class GetterTypeGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "_TEMPLATE";
@@ -10,7 +10,7 @@ class GetterTypeGenerator extends DeclarationGenerator {
 {{BINARY_TYPE}} get {{NAME}} => this["{{SYNONYM}}"];
 ''';
 
-  final ClassTypesGenerator classGenerator;
+  final ClassLibraryGenerator classGenerator;
 
   final Declarator declarator;
 

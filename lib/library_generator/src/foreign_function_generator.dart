@@ -42,7 +42,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
       throw new ArgumentError.notNull("classGenerator");
     }
 
-    _name = declaration.identifier.name;
+    _name = declaration.declarator.identifier.name;
     if (_name.startsWith("_")) {
       _name = "\$$name";
     }
@@ -61,33 +61,35 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     var arguments = <String>[];
     var parameters = <String>[];
     var params = "params";
-    var variadic = false;
-    for (var parameter in declaration.parameters.parameters) {
-      if (parameter.type is VaListTypeSpecification) {
-        params = _typeHelper.createName(params, names, prefix: "arg");
-        parameters.add("[List params]");
-        variadic = true;
-      } else {
-        String name;
-        if (parameter.identifier != null) {
-          name = parameter.identifier.name;
-        }
-
-        name = _typeHelper.createName(name, names, prefix: "arg");
-        var type = _getType(parameter.type);
-        arguments.add(name);
-        var string = name;
-        if (type != null) {
-          string = "$type $name";
-        }
-
-        parameters.add(string);
+    var declarator = declaration.declarator;
+    for (var parameter in declarator.parameters.elements) {
+      String name;
+      if (parameter.declarator.identifier != null) {
+        name = parameter.declarator.identifier.name;
       }
+
+      name = _typeHelper.createName(name, names, prefix: "arg");
+      var type = _getType(parameter.type);
+      type = _filterParameterType(type, null);
+      arguments.add(name);
+      var string = name;
+      if (type != null) {
+        string = "$type $name";
+      }
+
+      parameters.add(string);
+    }
+
+    var variadic = declarator.parameters.ellipsis != null;
+    if (variadic) {
+      params = _typeHelper.createName(params, names, prefix: params);
+      parameters.add("[List $params]");
     }
 
     var returnType = "dynamic";
-    if (declaration.returnType == null) {
-      returnType = _getType(declaration.returnType, "dynamic");
+    if (declaration.type != null) {
+      returnType = _resolveReturnType();
+      returnType = _filterReturnType(returnType, "dynamic");
     }
 
     block.assign("NAME", name);
@@ -105,20 +107,59 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     }
 
     blockBody.assign("ARGUMENTS", arguments.join(", "));
-    blockBody.assign("NAME", declaration.identifier.name);
+    blockBody.assign("NAME", declaration.declarator.identifier.name);
 
     //
     block.assign("#BODY", blockBody.process());
     return block.process();
   }
 
+  String _filterParameterType(String type, [String defaultType]) {
+    switch (type) {
+      case "bool":
+      case "double":
+      case "int":
+        break;
+      default:
+        type = defaultType;
+    }
+
+    return type;
+  }
+
+  String _resolveReturnType() {
+    var declarator = declaration.declarator;
+    if (declarator.isArray) {
+      return "BinaryData";
+    }
+
+    if (declarator.isPointers) {
+      return "BinaryData";
+    }
+
+    return _getType(declaration.type, "dynamic");
+  }
+
+  String _filterReturnType(String type, [String defaultType]) {
+    switch (type) {
+      case "BinaryData":
+      case "bool":
+      case "double":
+      case "int":
+      case "Map":
+      case "void":
+        break;
+      default:
+        type = defaultType;
+    }
+
+    return type;
+  }
+
   String _getType(TypeSpecification type, [String defaultType]) {
-    String result;
-    var dartType = _typeHelper.tryGetDartTypeAdvanced(type, classGenerator.types);
-    if (dartType == null) {
+    var result = _typeHelper.tryGetTypeOfValueForType(type, classGenerator.types);
+    if (result == null) {
       result = defaultType;
-    } else {
-      result = dartType.toString();
     }
 
     return result;

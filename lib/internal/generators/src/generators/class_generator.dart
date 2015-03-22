@@ -4,7 +4,7 @@ class ClassGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-class {{CLASSNAME}} {
+{{CLASS}} {
   {{#CONSTANTS}}    
   {{#STATIC_VARIABLES}}
   {{#STATIC_PROPERTIES}}
@@ -18,9 +18,11 @@ class {{CLASSNAME}} {
 }
 ''';
 
-  final String interfaces;
-
   final String name;
+
+  final String prefix;
+
+  final String suffix;
 
   List<List<String>> _code;
 
@@ -42,7 +44,7 @@ class {{CLASSNAME}} {
 
   Map<String, List<String>> _variables;
 
-  ClassGenerator(this.name, {this.interfaces}) {
+  ClassGenerator(this.name, {this.prefix, this.suffix}) {
     if (name == null || name.isEmpty) {
       throw new ArgumentError("name: $name");
     }
@@ -130,12 +132,16 @@ class {{CLASSNAME}} {
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var fullName = name;
-    if (interfaces != null) {
-      fullName = "$name $interfaces";
+    var specification = "class $name";
+    if (prefix != null) {
+      specification = "$prefix $specification";
     }
 
-    block.assign("CLASSNAME", fullName);
+    if (suffix != null) {
+      specification = "$specification $suffix";
+    }
+
+    block.assign("CLASS", specification);
     _generateDeclarations(block, "#CONSTANTS", _constants);
     _generateDeclarations(block, "#CONSTRUCTORS", _constructors);
     _generateDeclarations(block, "#METHODS", _methods);

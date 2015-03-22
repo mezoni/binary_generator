@@ -11,12 +11,9 @@ class ConstructorGenerator extends DeclarationGenerator {
 /**
  *
  */
-{{NAME}}(DynamicLibrary library) {
-  if (library == null) {
-    throw new ArgumentError.notNull("library");
-  }  
-  
-  library.declare($_HEADER);
+{{NAME}}(DynamicLibrary library, {Map<String, String> environment})
+    : super(types: library != null ? library.types : throw new ArgumentError.notNull("library")) {
+  library.declare($_HEADER, environment: environment);
   $_LIBRARY = library;
 }
 ''';

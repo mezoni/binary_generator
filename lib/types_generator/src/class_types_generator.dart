@@ -7,7 +7,8 @@ class ClassTypesGenerator extends ClassGenerator {
 
   final ScriptGenerator scriptGenerator;
 
-  ClassTypesGenerator(this.scriptGenerator, TypesGeneratorOptions options) : super(options.name, interfaces: "extends BinaryTypes") {
+  ClassTypesGenerator(this.scriptGenerator, TypesGeneratorOptions options)
+      : super(options.name, suffix: "extends BinaryTypes") {
     if (options == null) {
       throw new ArgumentError.notNull("options");
     }
@@ -20,15 +21,19 @@ class ClassTypesGenerator extends ClassGenerator {
   BinaryTypes get types => scriptGenerator.types;
 
   List<String> generate() {
-    var symbols = <String>[];
+    var names = new Set<String>();
     var typeHelper = new TypeHelper();
     for (var declaration in declarations) {
       if (declaration is TypedefDeclaration) {
-        for (var synonym in declaration.synonyms) {
-          if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
-            var name = _getSynonymName(synonym);
-            var generator = new GetterTypeGenerator(this, synonym, name);
-            addMethod(generator);
+        for (var declarator in declaration.declarators.elements) {
+          var name = declarator.identifier.name;
+          if (!names.contains(name)) {
+            if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
+              var generator = new GetterTypeGenerator(this, declarator, name);
+              addMethod(generator);
+            }
+
+            names.add(name);
           }
         }
       }
@@ -42,20 +47,5 @@ class ClassTypesGenerator extends ClassGenerator {
     addConstant(new VariableGenerator(ClassTypesGenerator.HEADER, "String", value: value));
 
     return super.generate();
-  }
-
-  String _getSynonymName(TypeSpecification type) {
-    switch (type.typeKind) {
-      case TypeSpecificationKind.ARRAY:
-        var arrayType = type as ArrayTypeSpecification;
-        return _getSynonymName(arrayType.type);
-      case TypeSpecificationKind.DEFINED:
-        return type.name;
-      case TypeSpecificationKind.POINTER:
-        var pointerType = type as PointerTypeSpecification;
-        return _getSynonymName(pointerType.type);
-      default:
-        throw new ArgumentError("Unable to get type synonym name: ${type.typeKind}");
-    }
   }
 }

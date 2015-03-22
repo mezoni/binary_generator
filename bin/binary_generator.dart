@@ -15,7 +15,7 @@ void main(List<String> arguments) {
 }
 
 class Program {
-  void libraryCommand(String filename, {String library, String name, String output}) {
+  void libraryCommand(String filename, {String library, String name, String output, List types}) {
     var header = _readFromFile(filename);
     name = _getClassName(filename, name);
     var generator = new LibraryGenerator(header);
@@ -23,7 +23,15 @@ class Program {
       library = name.toLowerCase();
     }
 
-    var options = new LibraryGeneratorOptions(header: header, library: library, name: name);
+    var headers = <String>[];
+    if (types != null) {
+      for (var file in types) {
+        var header = _readFromFile(file);
+        headers.add(header);
+      }
+    }
+
+    var options = new LibraryGeneratorOptions(header: header, headers: headers, library: library, name: name);
     var lines = generator.generate(options);
     if (output == null) {
       output = name.toLowerCase() + ".dart";
@@ -101,6 +109,9 @@ commands:
         help: Name of the generated Dart library (eg. --library libs.mylib)
       output:        
         help: Output file name (eg. --output mylib.dart)
+      types:
+        allowMultiple: true
+        help: External header files with a types (required only for missing types)
     rest:
       allowMultiple: false
       name: filename

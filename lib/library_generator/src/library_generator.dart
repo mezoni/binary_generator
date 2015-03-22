@@ -22,11 +22,13 @@ class LibraryGenerator {
 class LibraryGeneratorOptions {
   final String header;
 
+  final List<String> headers;
+
   final String library;
 
   final String name;
 
-  LibraryGeneratorOptions({this.header, this.library, this.name}) {
+  LibraryGeneratorOptions({this.header, this.headers, this.library, this.name}) {
     if (header == null) {
       throw new ArgumentError.notNull("header");
     }

@@ -5,4 +5,6 @@
 0.0.4 Made adaptations to the new version of package `binary_types`
 0.0.4 Added new generator `TypesGenerator`. The generator allows to generate the `binary types` from the textual format supported by the `binary_declarations`. The declarations "typedef"  will be represented as the members of the generated class `binary types`
 0.0.5 Fixed bug in `ForeignFunctionGenerator` with the function declarations with the abstract parameters (without the name)
-0.0.6 Added support of the functions which started with the "_" (underscore) in the library generator. Now they are prefixed with the "$" (dollar sign) in the generated Dart code   
+0.0.6 Added support of the functions which started with the "_" (underscore) in the library generator. Now they are prefixed with the "$" (dollar sign) in the generated Dart code
+0.0.7 Made adaptations to the new version of package `binary_declarations`
+0.0.8 Impovements in `LibraryGenerator`   
