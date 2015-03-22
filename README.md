@@ -3,7 +3,7 @@ binary_generator
 
 Binary generator is a tool (set of generators) that allows generate a development code for the binary interop and binary types.
 
-Version: 0.0.7
+Version: 0.0.8
 
 [Donate to binary generator for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.generator.for.dart&currency_code=USD)
 
@@ -86,6 +86,6 @@ typedef struct info {
 }
 ```
 
-**Library generator**
+**Library generator*
 
 Documentation comming soon...

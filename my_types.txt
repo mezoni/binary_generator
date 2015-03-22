@@ -1,4 +1,0 @@
-typedef char CHAR;
-typedef struct info {
-  int i;
-} INFO;
