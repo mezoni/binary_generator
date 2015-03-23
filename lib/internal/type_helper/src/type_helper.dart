@@ -2,6 +2,10 @@ part of binary_generator.internal.type_converter;
 
 class TypeHelper {
   static final Set<String> _reservedWords = new Set<String>.from([
+    "bool",
+    "int",
+    "double",
+    "bool",
     "assert",
     "break",
     "case",

@@ -64,13 +64,16 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     var declarator = declaration.declarator;
     for (var parameter in declarator.parameters.elements) {
       String name;
-      if (parameter.declarator.identifier != null) {
-        name = parameter.declarator.identifier.name;
+      if (parameter.declarator != null) {
+        if (parameter.declarator.identifier != null) {
+          name = parameter.declarator.identifier.name;
+        }
       }
 
       name = _typeHelper.createName(name, names, prefix: "arg");
-      var type = _getType(parameter.type);
-      type = _filterParameterType(type, null);
+      //var type = _getType(parameter.type);
+      //type = _filterParameterType(type, null);
+      var type = null;
       arguments.add(name);
       var string = name;
       if (type != null) {

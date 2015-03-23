@@ -1,6 +1,10 @@
+## 0.0.9
+
+- Temporarily was disabled a resolver of the function parameter type   
+
 ## 0.0.8
 
-- Impovements in `LibraryGenerator`   
+- Impovements in `LibraryGenerator`
 
 ## 0.0.7
 
