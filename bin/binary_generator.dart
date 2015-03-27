@@ -15,10 +15,10 @@ void main(List<String> arguments) {
 }
 
 class Program {
-  void libraryCommand(String filename, {String library, String name, String output, List types}) {
+  void libraryCommand(String filename,
+      {List<String> define, String library, String name, String output, List<String> types}) {
     var header = _readFromFile(filename);
     name = _getClassName(filename, name);
-    var generator = new LibraryGenerator(header);
     if (library == null) {
       library = name.toLowerCase();
     }
@@ -31,8 +31,11 @@ class Program {
       }
     }
 
-    var options = new LibraryGeneratorOptions(header: header, headers: headers, library: library, name: name);
-    var lines = generator.generate(options);
+    var environment = _getVariables(define);
+    var options = new LibraryGeneratorOptions(
+        environment: environment, header: header, headers: headers, library: library, name: name);
+    var generator = new LibraryGenerator(options);
+    var lines = generator.generate();
     if (output == null) {
       output = name.toLowerCase() + ".dart";
     }
@@ -40,16 +43,17 @@ class Program {
     _writeToFile(output, lines.join("\n"));
   }
 
-  void typesCommand(String filename, {String library, String name, String output}) {
+  void typesCommand(String filename, {List<String> define, String library, String name, String output}) {
     var header = _readFromFile(filename);
     name = _getClassName(filename, name);
-    var generator = new TypesGenerator(header);
     if (library == null) {
       library = name.toLowerCase();
     }
 
-    var options = new TypesGeneratorOptions(header: header, library: library, name: name);
-    var lines = generator.generate(options);
+    var environment = _getVariables(define);
+    var options = new TypesGeneratorOptions(environment: environment, header: header, library: library, name: name);
+    var generator = new TypesGenerator(options);
+    var lines = generator.generate();
     if (output == null) {
       output = name.toLowerCase() + ".dart";
     }
@@ -65,6 +69,32 @@ class Program {
     name = pathos.basenameWithoutExtension(filename);
     name = name.replaceAll(".", "_");
     return camelize(name);
+  }
+
+  Map<String, String> _getVariables(List<String> list) {
+    var result = <String, String>{};
+    if (list == null) {
+      return result;
+    }
+
+    for (var element in list) {
+      var index = element.indexOf("=");
+      String key;
+      var value = "";
+      if (index == -1) {
+        key = element;
+      } else {
+        key = element.substring(0, index);
+        value = element.substring(index + 1);
+      }
+
+      key = key.trim();
+      if (!key.isEmpty) {
+        result[key] = value.trim();
+      }
+    }
+
+    return result;
   }
 
   String _readFromFile(String filename) {
@@ -89,7 +119,10 @@ description: Binary generator for develop code from the binary interop and binar
 commands:
   types:
     description: Generate the binary types code for typedef types 
-    options:       
+    options:
+      define:
+        allowMultiple: true        
+        help: Define the environment variable (eg. --define __OS__)
       name:        
         help: Name of the generated Dart class (eg. --name MyTypes)                
       library:        
@@ -102,7 +135,10 @@ commands:
       required: true
   library:
     description: Generate the library code for functions and structures 
-    options:       
+    options:
+      define:
+        allowMultiple: true        
+        help: Define the environment variable (eg. --define __OS__)       
       name:        
         help: Name of the generated Dart class (eg. --name MyLib)                
       library:        

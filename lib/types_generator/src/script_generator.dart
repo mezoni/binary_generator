@@ -48,7 +48,7 @@ import "package:binary_types/binary_types.dart";
     _declarations = new Declarations(options.header);
     _types = new BinaryTypes();
     var helper = new BinaryTypeHelper(_types);
-    helper.declare(header);
+    helper.declare(header, environment: options.environment);
     var classLibraryGenerator = new ClassTypesGenerator(this, options);
     addClass(classLibraryGenerator);
     if (options.library != null) {

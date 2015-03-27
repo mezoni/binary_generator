@@ -34,6 +34,8 @@ import "package:binary_interop/binary_interop.dart";
 
   Declarations get declarations => _declarations;
 
+  Map<String, FunctionType> get functions => _functions;
+
   BinaryTypes get types => _types;
 
   void addClass(DeclarationGenerator declaration) {
@@ -58,7 +60,7 @@ import "package:binary_interop/binary_interop.dart";
       }
     }
 
-    helper.declare(header);
+    helper.declare(header, environment: options.environment, functions: functions);
     var classLibraryGenerator = new ClassLibraryGenerator(this, options);
     addClass(classLibraryGenerator);
     if (options.library != null) {

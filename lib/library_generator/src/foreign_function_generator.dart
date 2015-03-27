@@ -33,9 +33,9 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
   final FunctionDeclaration declaration;
 
-  TypeHelper _typeHelper;
-
   String _name;
+
+  TypeHelper _typeHelper;
 
   ForeignFunctionGenerator(this.classGenerator, this.declaration) {
     if (classGenerator == null) {
@@ -52,28 +52,37 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     addTemplate(_TEMPLATE_BODY_VARIADIC, _templateBodyVariadic);
   }
 
+  Map<String, FunctionType> get functions => classGenerator.scriptGenerator.functions;
+
   String get name => _name;
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     _typeHelper = new TypeHelper();
-    var names = new Set<String>();
     var arguments = <String>[];
+    var declarator = declaration.declarator;
+    var declaratorParameters = declarator.parameters.elements;
+    var function = functions[name];
+    var arity = function.arity;
+    var functionParameters = function.parameters;
+    var names = new Set<String>();
     var parameters = <String>[];
     var params = "params";
-    var declarator = declaration.declarator;
-    for (var parameter in declarator.parameters.elements) {
+    for (var i = 0; i < arity; i++) {
+      var binaryType = functionParameters[i];
+      var parameter = declaratorParameters[i];
       String name;
-      if (parameter.declarator != null) {
-        if (parameter.declarator.identifier != null) {
-          name = parameter.declarator.identifier.name;
+      var declarator = parameter.declarator;
+      if (declarator != null) {
+        var identifier = declarator.identifier;
+        if (identifier != null) {
+          name = identifier.name;
         }
       }
 
       name = _typeHelper.createName(name, names, prefix: "arg");
-      //var type = _getType(parameter.type);
-      //type = _filterParameterType(type, null);
-      var type = null;
+      var type = _typeHelper.getTypeOfValueForBinaryType(binaryType);
+      type = _filterParameterType(type);
       arguments.add(name);
       var string = name;
       if (type != null) {
@@ -83,17 +92,14 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
       parameters.add(string);
     }
 
-    var variadic = declarator.parameters.ellipsis != null;
+    var variadic = function.variadic;
     if (variadic) {
       params = _typeHelper.createName(params, names, prefix: params);
       parameters.add("[List $params]");
     }
 
-    var returnType = "dynamic";
-    if (declaration.type != null) {
-      returnType = _resolveReturnType();
-      returnType = _filterReturnType(returnType, "dynamic");
-    }
+    var returnType = _typeHelper.getTypeOfValueForBinaryType(function.returnType);
+    returnType = _filterReturnType(returnType, "dynamic");
 
     block.assign("NAME", name);
     block.assign("COMMENT", declaration);
@@ -122,25 +128,13 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
       case "bool":
       case "double":
       case "int":
+      case "Map":
         break;
       default:
         type = defaultType;
     }
 
     return type;
-  }
-
-  String _resolveReturnType() {
-    var declarator = declaration.declarator;
-    if (declarator.isArray) {
-      return "BinaryData";
-    }
-
-    if (declarator.isPointers) {
-      return "BinaryData";
-    }
-
-    return _getType(declaration.type, "dynamic");
   }
 
   String _filterReturnType(String type, [String defaultType]) {
@@ -157,14 +151,5 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     }
 
     return type;
-  }
-
-  String _getType(TypeSpecification type, [String defaultType]) {
-    var result = _typeHelper.tryGetTypeOfValueForType(type, classGenerator.types);
-    if (result == null) {
-      result = defaultType;
-    }
-
-    return result;
   }
 }

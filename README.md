@@ -3,7 +3,7 @@ binary_generator
 
 Binary generator is a tool (set of generators) that allows generate a development code for the binary interop and binary types.
 
-Version: 0.0.9
+Version: 0.0.10
 
 [Donate to binary generator for dart](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=binary.dart@gmail.com&item_name=binary.generator.for.dart&currency_code=USD)
 
@@ -12,6 +12,7 @@ Version: 0.0.9
 - [Binary declarations](https://pub.dartlang.org/packages/binary_declarations)
 - [Binary generator](https://pub.dartlang.org/packages/binary_generator)
 - [Binary interop](https://pub.dartlang.org/packages/binary_interop)
+- [Binary marshalling](https://pub.dartlang.org/packages/binary_marshalling)
 - [Binary types](https://pub.dartlang.org/packages/binary_types)
 
 **Features**
