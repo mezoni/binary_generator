@@ -1,15 +1,19 @@
 part of binary_generator.types_generator;
 
 class TypesGenerator {
-  final TypesGeneratorOptions options;
+  final String text;
 
-  TypesGenerator(this.options) {
-    if (options == null) {
-      throw new ArgumentError.notNull("options");
+  TypesGenerator(this.text) {
+    if (text == null) {
+      throw new ArgumentError.notNull("header");
     }
   }
 
-  List<String> generate() {
+  List<String> generate(TypesGeneratorOptions options) {
+    if (options == null) {
+      throw new ArgumentError.notNull("options");
+    }
+
     var scriptGenerator = new ScriptGenerator(options);
     return scriptGenerator.generate();
   }

@@ -1,38 +1,45 @@
 part of binary_generator.library_generator;
 
 class LibraryGenerator {
-  final LibraryGeneratorOptions options;
-
-  LibraryGenerator(this.options) {
+  List<String> generate(LibraryGeneratorOptions options) {
     if (options == null) {
       throw new ArgumentError.notNull("options");
     }
-  }
 
-  List<String> generate() {
     var scriptGenerator = new ScriptGenerator(options);
     return scriptGenerator.generate();
   }
 }
 
 class LibraryGeneratorOptions {
+  final Iterable<String> directives;
+
   final Map<String, String> environment;
 
   final String header;
 
-  final List<String> headers;
+  final Map<String, String> headers;
 
-  final String library;
+  final Iterable<String> links;
 
   final String name;
 
-  LibraryGeneratorOptions({this.environment, this.header, this.headers, this.library, this.name}) {
+  final String prefix;
+
+  final String suffix;
+
+  LibraryGeneratorOptions(
+      {this.directives, this.environment, this.header, this.headers, this.links, this.name, this.prefix, this.suffix}) {
     if (header == null) {
       throw new ArgumentError.notNull("header");
     }
 
-    if (library == null) {
-      throw new ArgumentError.notNull("library");
+    if (headers == null) {
+      throw new ArgumentError.notNull("headers");
+    }
+
+    if (links == null) {
+      throw new ArgumentError.notNull("links");
     }
 
     if (name == null) {

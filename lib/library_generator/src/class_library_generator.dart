@@ -1,15 +1,14 @@
 part of binary_generator.library_generator;
 
 class ClassLibraryGenerator extends ClassGenerator {
-  static const String HEADER = "_header";
-
   static const String LIBRARY = "_library";
 
   LibraryGeneratorOptions _options;
 
   final ScriptGenerator scriptGenerator;
 
-  ClassLibraryGenerator(this.scriptGenerator, LibraryGeneratorOptions options) : super(options.name, suffix: "extends BinaryTypes") {
+  ClassLibraryGenerator(this.scriptGenerator, LibraryGeneratorOptions options)
+      : super(options.name, prefix: options.prefix, suffix: options.suffix) {
     if (options == null) {
       throw new ArgumentError.notNull("options");
     }
@@ -17,38 +16,27 @@ class ClassLibraryGenerator extends ClassGenerator {
     _options = options;
   }
 
-  Declarations get declarations => scriptGenerator.declarations;
-
   BinaryTypes get types => scriptGenerator.types;
 
-  List<String> generate() {
-    var names = new Set<String>();
+  List<String> generate() {    
     var typeHelper = new TypeHelper();
-    for (var declaration in declarations) {
-      if (declaration is TypedefDeclaration) {
-        for (var declarator in declaration.declarators.elements) {
-          var name = declarator.identifier.name;
-          if (!names.contains(name)) {
-            if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
-              var generator = new GetterTypeGenerator(this, declarator, name);
-              addMethod(generator);
-            }
-
-            names.add(name);
-          }
+    var helper = new BinaryTypeHelper(types);
+    var prototypes = helper.prototypes;
+    var filenames = new Set<String>();
+    filenames.addAll(_options.links);
+    for (var name in prototypes.keys) {
+      if (!typeHelper.isReservedWord(name)) {
+        var prototype = prototypes[name];
+        var filename = prototype.filename;
+        if (filenames.contains(filename)) {
+          var generator = new ForeignFunctionGenerator(this, prototype);
+          addMethod(generator);
         }
-      } else if (declaration is FunctionDeclaration) {
-        var generator = new ForeignFunctionGenerator(this, declaration);
-        addMethod(generator);
       }
     }
 
     // Constructor
     addConstructor(new ConstructorGenerator(this, _options));
-
-    // HEADER
-    var value = "'''\n${_options.header}'''";
-    addConstant(new VariableGenerator(ClassLibraryGenerator.HEADER, "String", value: value));
 
     // LIBRARY
     addVariable(new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));

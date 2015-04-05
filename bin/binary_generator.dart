@@ -10,6 +10,8 @@ import "package:path/path.dart" as pathos;
 import "package:yaml/yaml.dart" as yaml;
 
 void main(List<String> arguments) {
+  print("Not implemented yet.");
+  exit(-1);
   var config = yaml.loadYaml(_config);
   new ArgsHelper<Program>().run(arguments, config);
 }
@@ -19,6 +21,7 @@ class Program {
       {List<String> define, String library, String name, String output, List<String> types}) {
     var header = _readFromFile(filename);
     name = _getClassName(filename, name);
+    var generator = new LibraryGenerator(header);
     if (library == null) {
       library = name.toLowerCase();
     }
@@ -32,10 +35,8 @@ class Program {
     }
 
     var environment = _getVariables(define);
-    var options = new LibraryGeneratorOptions(
-        environment: environment, header: header, headers: headers, library: library, name: name);
-    var generator = new LibraryGenerator(options);
-    var lines = generator.generate();
+    var options = new LibraryGeneratorOptions(environment: environment, header: header, headers: headers, library: library, name: name);
+    var lines = generator.generate(options);
     if (output == null) {
       output = name.toLowerCase() + ".dart";
     }
@@ -46,14 +47,14 @@ class Program {
   void typesCommand(String filename, {List<String> define, String library, String name, String output}) {
     var header = _readFromFile(filename);
     name = _getClassName(filename, name);
+    var generator = new TypesGenerator(header);
     if (library == null) {
       library = name.toLowerCase();
     }
 
     var environment = _getVariables(define);
-    var options = new TypesGeneratorOptions(environment: environment, header: header, library: library, name: name);
-    var generator = new TypesGenerator(options);
-    var lines = generator.generate();
+    var options = new TypesGeneratorOptions(environment: environment,  header: header, library: library, name: name);
+    var lines = generator.generate(options);
     if (output == null) {
       output = name.toLowerCase() + ".dart";
     }

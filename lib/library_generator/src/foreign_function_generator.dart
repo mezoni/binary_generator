@@ -31,18 +31,18 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
 
   final ClassLibraryGenerator classGenerator;
 
-  final FunctionDeclaration declaration;
+  final Prototype prototype;
 
   String _name;
 
   TypeHelper _typeHelper;
 
-  ForeignFunctionGenerator(this.classGenerator, this.declaration) {
+  ForeignFunctionGenerator(this.classGenerator, this.prototype) {
     if (classGenerator == null) {
       throw new ArgumentError.notNull("classGenerator");
     }
 
-    _name = declaration.declarator.identifier.name;
+    _name = prototype.type.identifier;
     if (_name.startsWith("_")) {
       _name = "\$$name";
     }
@@ -52,34 +52,22 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     addTemplate(_TEMPLATE_BODY_VARIADIC, _templateBodyVariadic);
   }
 
-  Map<String, FunctionType> get functions => classGenerator.scriptGenerator.functions;
-
   String get name => _name;
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     _typeHelper = new TypeHelper();
     var arguments = <String>[];
-    var declarator = declaration.declarator;
-    var declaratorParameters = declarator.parameters.elements;
-    var function = functions[name];
+    var function = prototype.type;
     var arity = function.arity;
     var functionParameters = function.parameters;
+    var parameterNames = prototype.parameters;
     var names = new Set<String>();
     var parameters = <String>[];
     var params = "params";
     for (var i = 0; i < arity; i++) {
       var binaryType = functionParameters[i];
-      var parameter = declaratorParameters[i];
-      String name;
-      var declarator = parameter.declarator;
-      if (declarator != null) {
-        var identifier = declarator.identifier;
-        if (identifier != null) {
-          name = identifier.name;
-        }
-      }
-
+      var name = parameterNames[i];
       name = _typeHelper.createName(name, names, prefix: "arg");
       var type = _typeHelper.getTypeOfValueForBinaryType(binaryType);
       type = _filterParameterType(type);
@@ -102,7 +90,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     returnType = _filterReturnType(returnType, "dynamic");
 
     block.assign("NAME", name);
-    block.assign("COMMENT", declaration);
+    block.assign("COMMENT", function.name);
     block.assign("RETURN_TYPE", returnType);
     block.assign("PARAMETERS", parameters.join(", "));
 
@@ -116,7 +104,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     }
 
     blockBody.assign("ARGUMENTS", arguments.join(", "));
-    blockBody.assign("NAME", declaration.declarator.identifier.name);
+    blockBody.assign("NAME", name);
 
     //
     block.assign("#BODY", blockBody.process());

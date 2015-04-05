@@ -1,9 +1,7 @@
 part of binary_generator.library_generator;
 
 class ConstructorGenerator extends DeclarationGenerator {
-  static const String _TEMPLATE = "_TEMPLATE";
-
-  static const String _HEADER = ClassLibraryGenerator.HEADER;
+  static const String _TEMPLATE = "_TEMPLATE";  
 
   static const String _LIBRARY = ClassLibraryGenerator.LIBRARY;
 
@@ -11,15 +9,18 @@ class ConstructorGenerator extends DeclarationGenerator {
 /**
  *
  */
-{{NAME}}(DynamicLibrary library, {Map<String, String> environment, BinaryTypes types})
-    : super(types: types) {
-  library.types = this; 
-  library.declare($_HEADER, environment: environment);
+{{NAME}}(DynamicLibrary library) { 
+  var headers = <String>[{{#HEADERS}}];
+  var types = library.types;
+  var helper = new BinaryTypeHelper(types); 
+  for (var header in headers) {
+    helper.declare(header);    
+  }
+
+  library.link(headers);
   $_LIBRARY = library;
 }
-''';
-
-  Declarations _declarations;
+''';  
 
   final ClassLibraryGenerator classGenerator;
 
@@ -37,13 +38,13 @@ class ConstructorGenerator extends DeclarationGenerator {
     addTemplate(_TEMPLATE, _template);
   }
 
-  Declarations get declarations => classGenerator.declarations;
-
   String get name => options.name;
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     block.assign("NAME", name);
+    var headers = options.links.join("\", \"");
+    block.assign("#HEADERS", "\"$headers\"");
     return block.process();
   }
 }
