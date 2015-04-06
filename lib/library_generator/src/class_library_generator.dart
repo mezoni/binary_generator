@@ -35,39 +35,47 @@ class ClassLibraryGenerator extends ClassGenerator {
       }
     }
 
+    _generateConstants(filenames, helper, typeHelper);
+    // Constructor
+    addConstructor(new ConstructorGenerator(this, _options));
+    // LIBRARY
+    addVariable(new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));
+    return super.generate();
+  }
+
+  void _generateConstants(Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
+    var constants = _options.constants;
+    if (constants == null) {
+      return;
+    }
+
     var definitions = helper.definitions;
     bool defined(String name) {
       return definitions.containsKey(name);
     }
 
-    for (var name in definitions.keys) {
-      if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
-        var definition = definitions[name];
-        var filename = definition.filename;
-        if (filenames.contains(filename)) {
-          var expander = new MacroExpander();
-          var string = expander.expand(definition.fragments, definitions);
-          var evaluator = new ExpressionEvaluator();
-          try {
-            var value = evaluator.evaluate(string, defined: defined);
-            if (value is int) {
-              var comment = "// #define $name $definition";
-              value = value.toString();
-              addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
-            }
-          } catch (e) {
-            // Nothing
+    for (var name in constants) {
+      var definition = definitions[name];
+      if (definition == null) {
+        throw new StateError("Constant not defined: '$name'");
+      }
+
+      var filename = definition.filename;
+      if (filenames.contains(filename)) {
+        var expander = new MacroExpander();
+        var string = expander.expand(definition.fragments, definitions);
+        var evaluator = new ExpressionEvaluator();
+        try {
+          var value = evaluator.evaluate(string, defined: defined);
+          if (value is int) {
+            var comment = "// #define $name $definition";
+            value = value.toString();
+            addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
           }
+        } catch (e) {
+          // Nothing
         }
       }
     }
-
-    // Constructor
-    addConstructor(new ConstructorGenerator(this, _options));
-
-    // LIBRARY
-    addVariable(new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));
-
-    return super.generate();
   }
 }

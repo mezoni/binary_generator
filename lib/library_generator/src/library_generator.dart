@@ -12,6 +12,8 @@ class LibraryGenerator {
 }
 
 class LibraryGeneratorOptions {
+  final Iterable<String> constants;
+
   final Iterable<String> directives;
 
   final Map<String, String> environment;
@@ -28,8 +30,8 @@ class LibraryGeneratorOptions {
 
   final String suffix;
 
-  LibraryGeneratorOptions(
-      {this.directives, this.environment, this.header, this.headers, this.links, this.name, this.prefix, this.suffix}) {
+  LibraryGeneratorOptions({this.constants, this.directives, this.environment, this.header, this.headers, this.links,
+      this.name, this.prefix, this.suffix}) {
     if (header == null) {
       throw new ArgumentError.notNull("header");
     }

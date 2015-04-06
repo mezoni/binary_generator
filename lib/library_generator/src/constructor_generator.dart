@@ -1,7 +1,7 @@
 part of binary_generator.library_generator;
 
 class ConstructorGenerator extends DeclarationGenerator {
-  static const String _TEMPLATE = "_TEMPLATE";  
+  static const String _TEMPLATE = "_TEMPLATE";
 
   static const String _LIBRARY = ClassLibraryGenerator.LIBRARY;
 
@@ -20,7 +20,7 @@ class ConstructorGenerator extends DeclarationGenerator {
   library.link(headers);
   $_LIBRARY = library;
 }
-''';  
+''';
 
   final ClassLibraryGenerator classGenerator;
 
