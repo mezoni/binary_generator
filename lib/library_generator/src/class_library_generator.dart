@@ -18,7 +18,7 @@ class ClassLibraryGenerator extends ClassGenerator {
 
   BinaryTypes get types => scriptGenerator.types;
 
-  List<String> generate() {    
+  List<String> generate() {
     var typeHelper = new TypeHelper();
     var helper = new BinaryTypeHelper(types);
     var prototypes = helper.prototypes;
@@ -31,6 +31,33 @@ class ClassLibraryGenerator extends ClassGenerator {
         if (filenames.contains(filename)) {
           var generator = new ForeignFunctionGenerator(this, prototype);
           addMethod(generator);
+        }
+      }
+    }
+
+    var definitions = helper.definitions;
+    bool defined(String name) {
+      return definitions.containsKey(name);
+    }
+
+    for (var name in definitions.keys) {
+      if (!name.startsWith("_") && !typeHelper.isReservedWord(name)) {
+        var definition = definitions[name];
+        var filename = definition.filename;
+        if (filenames.contains(filename)) {
+          var expander = new MacroExpander();
+          var string = expander.expand(definition.fragments, definitions);
+          var evaluator = new ExpressionEvaluator();
+          try {
+            var value = evaluator.evaluate(string, defined: defined);
+            if (value is int) {
+              var comment = "// #define $name $definition";
+              value = value.toString();
+              addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
+            }
+          } catch (e) {
+            // Nothing
+          }
         }
       }
     }

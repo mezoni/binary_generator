@@ -1,6 +1,10 @@
+## 0.0.12
+
+- The `LibraryGenerator` now generates constants from the macro definitions   
+
 ## 0.0.9
 
-- Temporarily was disabled a resolver of the function parameter type   
+- Temporarily was disabled a resolver of the function parameter type
 
 ## 0.0.8
 
