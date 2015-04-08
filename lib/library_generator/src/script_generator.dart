@@ -44,8 +44,10 @@ class ScriptGenerator extends TemplateGenerator {
     helper.declare(options.header, environment: options.environment);
     var classLibraryGenerator = new ClassLibraryGenerator(this, options);
     addClass(classLibraryGenerator);
-    for (var directive in options.directives) {
-      block.assign("#DIRECTIVES", "$directive;\n");
+    if (options.directives != null) {
+      for (var directive in options.directives) {
+        block.assign("#DIRECTIVES", "$directive;\n");
+      }
     }
 
     _generateDeclarations(block, "#CLASSES", _classes);
