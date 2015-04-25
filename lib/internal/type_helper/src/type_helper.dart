@@ -71,35 +71,38 @@ class TypeHelper {
 
     String result;
     switch (type.kind) {
-      case BinaryKinds.ARRAY:
+      case BinaryKind.ARRAY:
         result = "List";
         break;
-      case BinaryKinds.DOUBLE:
-      case BinaryKinds.FLOAT:
+      case BinaryKind.DOUBLE:
+      case BinaryKind.FLOAT:
         result = "double";
         break;
-      case BinaryKinds.BOOL:
+      case BinaryKind.BOOL:
         result = "bool";
         break;
-      case BinaryKinds.ENUM:
-      case BinaryKinds.SINT16:
-      case BinaryKinds.SINT32:
-      case BinaryKinds.SINT64:
-      case BinaryKinds.SINT8:
-      case BinaryKinds.UINT16:
-      case BinaryKinds.UINT32:
-      case BinaryKinds.UINT64:
-      case BinaryKinds.UINT8:
+      case BinaryKind.ENUM:
+      case BinaryKind.SINT16:
+      case BinaryKind.SINT32:
+      case BinaryKind.SINT64:
+      case BinaryKind.SINT8:
+      case BinaryKind.UINT16:
+      case BinaryKind.UINT32:
+      case BinaryKind.UINT64:
+      case BinaryKind.UINT8:
         result = "int";
         break;
-      case BinaryKinds.POINTER:
+      case BinaryKind.POINTER:
         result = "BinaryData";
         break;
-      case BinaryKinds.STRUCT:
+      case BinaryKind.STRUCT:
         result = "Map";
         break;
-      case BinaryKinds.VOID:
+      case BinaryKind.VOID:
         result = "void";
+        break;
+      default:
+        break;
     }
 
     return result;

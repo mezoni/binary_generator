@@ -11,3 +11,4 @@
 0.0.9 Temporarily was disabled a resolver of the function parameter type
 0.0.12 The `LibraryGenerator` now generates constants from the macro definitions   
 0.0.14 The `LibraryGenerator` now generates constants from the macro definitions (only included in the `white list`)
+0.0.16 Made adaptations to the new version of package `binary_types`

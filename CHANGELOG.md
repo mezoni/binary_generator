@@ -1,3 +1,7 @@
+## 0.0.16
+
+- Made adaptations to the new version of package `binary_types`
+
 ## 0.0.14
 
 - The `LibraryGenerator` now generates constants from the macro definitions (only included in the `white list`)
