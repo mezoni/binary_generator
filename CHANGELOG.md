@@ -1,3 +1,7 @@
+## 0.0.17
+
+- Added new generator `ConstantsGenerator`. The generator allows to generate the `constants` from the textual format supported by the `binary_declarations`. The defintionss "#define" will be represented as the static constants members of the generated class
+
 ## 0.0.16
 
 - Made adaptations to the new version of package `binary_types`
@@ -32,7 +36,7 @@
 
 ## 0.0.4
 
-- Added new generator `TypesGenerator`. The generator allows to generate the `binary types` from the textual format supported by the `binary_declarations`. The declarations "typedef"  will be represented as the members of the generated class `binary types`
+- Added new generator `TypesGenerator`. The generator allows to generate the `binary types` from the textual format supported by the `binary_declarations`. The declarations "typedef" will be represented as the members of the generated class `binary types`
 - Made adaptations to the new version of package `binary_declarations`
 - Made adaptations to the new version of package `binary_types`
 
