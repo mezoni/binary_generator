@@ -7,7 +7,7 @@ class ConstructorGenerator extends DeclarationGenerator {
 /**
  *
  */
-abstract class {{NAME}}._internal();
+{{NAME}}._internal();
 ''';
 
   final ClassLibraryGenerator classGenerator;
