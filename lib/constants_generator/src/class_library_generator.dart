@@ -19,20 +19,8 @@ class ClassLibraryGenerator extends ClassGenerator {
   List<String> generate() {
     var typeHelper = new TypeHelper();
     var helper = new BinaryTypeHelper(types);
-    var prototypes = helper.prototypes;
     var filenames = new Set<String>();
     filenames.addAll(_options.links);
-    for (var name in prototypes.keys) {
-      if (!typeHelper.isReservedWord(name)) {
-        var prototype = prototypes[name];
-        var filename = prototype.filename;
-        if (filenames.contains(filename)) {
-          var generator = new ForeignFunctionGenerator(this, prototype);
-          addMethod(generator);
-        }
-      }
-    }
-
     _generateConstants(filenames, helper, typeHelper);
     // Constructor
     addConstructor(new ConstructorGenerator(this, _options));
@@ -40,6 +28,24 @@ class ClassLibraryGenerator extends ClassGenerator {
   }
 
   void _generateConstants(Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
+    void _error(MacroDefinition definition) {
+      var sb = new StringBuffer();
+      sb.write("Macro definition error");
+      var filename = definition.filename;
+      if (filename != null) {
+        sb.write(" (");
+        sb.write(filename);
+        sb.write("): ");
+      } else {
+        sb.write(": ");
+      }
+
+      sb.write(definition.name);
+      sb.write(" ");
+      sb.write(definition);
+      print(sb);
+    }
+
     var constants = _options.constants;
     var definitions = helper.definitions;
     bool defined(String name) {
@@ -54,7 +60,7 @@ class ClassLibraryGenerator extends ClassGenerator {
         }
 
         var filename = definition.filename;
-        if (filenames.contains(filename)) {
+        if (filenames.contains(filename) && !definition.fragments.isEmpty) {
           var expander = new MacroExpander();
           var string = expander.expand(definition.fragments, definitions);
           var evaluator = new ExpressionEvaluator();
@@ -66,7 +72,8 @@ class ClassLibraryGenerator extends ClassGenerator {
               addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
             }
           } catch (e) {
-            // Nothing
+            _error(definition);
+            rethrow;
           }
         }
       }
@@ -76,7 +83,7 @@ class ClassLibraryGenerator extends ClassGenerator {
       for (var name in definitions.keys) {
         var definition = definitions[name];
         var filename = definition.filename;
-        if (links.contains(filename)) {
+        if (links.contains(filename) && !definition.fragments.isEmpty) {
           var expander = new MacroExpander();
           var string = expander.expand(definition.fragments, definitions);
           var evaluator = new ExpressionEvaluator();
@@ -88,7 +95,8 @@ class ClassLibraryGenerator extends ClassGenerator {
               addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
             }
           } catch (e) {
-            // Nothing
+            _error(definition);
+            rethrow;
           }
         }
       }
