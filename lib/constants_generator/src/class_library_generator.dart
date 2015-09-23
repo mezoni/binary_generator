@@ -69,6 +69,10 @@ class ClassLibraryGenerator extends ClassGenerator {
             if (value is int) {
               var comment = "// #define $name $definition";
               value = value.toString();
+              if (name.startsWith("_")) {
+                name = "\$$name";
+              }
+
               addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
             }
           } catch (e) {
@@ -92,6 +96,10 @@ class ClassLibraryGenerator extends ClassGenerator {
             if (value is int) {
               var comment = "// #define $name $definition";
               value = value.toString();
+              if (name.startsWith("_")) {
+                name = "\$$name";
+              }
+
               addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
             }
           } catch (e) {

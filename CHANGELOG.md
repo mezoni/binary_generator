@@ -1,3 +1,7 @@
+## 0.0.19
+
+- Fixed bug in `ConstantsGenerator`
+
 ## 0.0.17
 
 - Added new generator `ConstantsGenerator`. The generator allows to generate the `constants` from the textual format supported by the `binary_declarations`. The defintionss "#define" will be represented as the static constants members of the generated class
