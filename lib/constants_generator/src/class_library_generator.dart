@@ -6,7 +6,7 @@ class ClassLibraryGenerator extends ClassGenerator {
   final ScriptGenerator scriptGenerator;
 
   ClassLibraryGenerator(this.scriptGenerator, ConstantsGeneratorOptions options)
-      : super(options.name, prefix: options.prefix, suffix: options.suffix) {
+  : super(options.name, prefix: options.prefix, suffix: options.suffix) {
     if (options == null) {
       throw new ArgumentError.notNull("options");
     }
@@ -27,7 +27,8 @@ class ClassLibraryGenerator extends ClassGenerator {
     return super.generate();
   }
 
-  void _generateConstants(Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
+  void _generateConstants(
+      Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
     void _error(MacroDefinition definition) {
       var sb = new StringBuffer();
       sb.write("Macro definition error");
@@ -48,6 +49,7 @@ class ClassLibraryGenerator extends ClassGenerator {
 
     var constants = _options.constants;
     var definitions = helper.definitions;
+    var enumerators = helper.enumerators;
     bool defined(String name) {
       return definitions.containsKey(name);
     }
@@ -69,15 +71,22 @@ class ClassLibraryGenerator extends ClassGenerator {
             if (value is int) {
               var comment = "// #define $name $definition";
               value = value.toString();
-              if (name.startsWith("_")) {
-                name = "\$$name";
-              }
-
-              addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
+              addConstant(new VariableGenerator(name, "static const int",
+              comment: comment, value: value));
             }
           } catch (e) {
             _error(definition);
             rethrow;
+          }
+        }
+
+        for (var name in constants) {
+          if (enumerators.containsKey(name)) {
+            var value = enumerators[name];
+            var comment = "// enum $name = $value";
+            value = value.toString();
+            addConstant(new VariableGenerator(name, "static const int",
+            comment: comment, value: value));
           }
         }
       }
@@ -96,17 +105,22 @@ class ClassLibraryGenerator extends ClassGenerator {
             if (value is int) {
               var comment = "// #define $name $definition";
               value = value.toString();
-              if (name.startsWith("_")) {
-                name = "\$$name";
-              }
-
-              addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
+              addConstant(new VariableGenerator(name, "static const int",
+              comment: comment, value: value));
             }
           } catch (e) {
             _error(definition);
             rethrow;
           }
         }
+      }
+
+      for (var name in enumerators.keys) {
+        var value = enumerators[name];
+        var comment = "// enum $name = $value";
+        value = value.toString();
+        addConstant(new VariableGenerator(name, "static const int",
+        comment: comment, value: value));
       }
     }
   }

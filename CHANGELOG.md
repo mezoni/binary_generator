@@ -1,3 +1,7 @@
+## 0.0.20
+
+- The `ConstantsGenerator` now generates constants from the enum declarations
+
 ## 0.0.19
 
 - Fixed bug in `ConstantsGenerator`
