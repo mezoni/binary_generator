@@ -9,7 +9,7 @@ class GetterVariableGenerator extends DeclarationGenerator {
 /**
  * {{COMMENT}}
  */
-{{BINARY_TYPE}} get {{NAME}} => $_LIBRARY.variable({{SYMBOL_NAME}});
+BinaryData get {{NAME}} => $_LIBRARY.variable("{{SYMBOL_NAME}}");
 ''';
 
   final ClassLibraryGenerator classGenerator;
@@ -45,7 +45,6 @@ class GetterVariableGenerator extends DeclarationGenerator {
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     var binaryType = variable.type;
-    block.assign("BINARY_TYPE", binaryType.runtimeType.toString());
     block.assign("COMMENT", binaryType.typedefName);
     block.assign("NAME", name);
     block.assign("SYMBOL_NAME", _symbolName);
