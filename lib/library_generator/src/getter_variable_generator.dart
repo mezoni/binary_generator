@@ -44,7 +44,7 @@ class GetterVariableGenerator extends DeclarationGenerator {
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var binaryType = classGenerator.types[name];
+    var binaryType = variable.type;
     block.assign("BINARY_TYPE", binaryType.runtimeType.toString());
     block.assign("COMMENT", binaryType.typedefName);
     block.assign("NAME", name);
