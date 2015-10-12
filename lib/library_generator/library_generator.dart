@@ -12,5 +12,6 @@ part 'src/class_library_generator.dart';
 part 'src/constructor_generator.dart';
 part 'src/foreign_function_generator.dart';
 part 'src/getter_type_generator.dart';
+part 'src/getter_variable_generator.dart';
 part 'src/library_generator.dart';
 part 'src/script_generator.dart';

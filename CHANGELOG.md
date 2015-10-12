@@ -1,3 +1,7 @@
+## 0.0.21
+
+- The `LibraryGenerator` now generates variables from the binary types
+
 ## 0.0.20
 
 - The `ConstantsGenerator` now generates constants from the enum declarations

@@ -39,11 +39,13 @@ class ClassLibraryGenerator extends ClassGenerator {
     // Constructor
     addConstructor(new ConstructorGenerator(this, _options));
     // LIBRARY
-    addVariable(new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));
+    addVariable(
+        new VariableGenerator(ClassLibraryGenerator.LIBRARY, "DynamicLibrary"));
     return super.generate();
   }
 
-  void _generateConstants(Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
+  void _generateConstants(
+      Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
     var constants = _options.constants;
     if (constants == null) {
       return;
@@ -70,12 +72,30 @@ class ClassLibraryGenerator extends ClassGenerator {
           if (value is int) {
             var comment = "// #define $name $definition";
             value = value.toString();
-            addConstant(new VariableGenerator(name, "static const int", comment: comment, value: value));
+            if (name.startsWith("_")) {
+              name = "\$$name";
+            }
+
+            addConstant(new VariableGenerator(name, "static const int",
+                comment: comment, value: value));
           }
         } catch (e) {
           // Nothing
         }
       }
+    }
+  }
+
+  void _generateVariables(
+      Set<String> filenames, BinaryTypeHelper helper, TypeHelper typeHelper) {
+    for (var variable in helper.variables.values) {
+      var filename = variable.filename;
+      if (filenames.contains(filename)) {
+        var name = variable.name;
+      }
+
+      var generator = new GetterVariableGenerator(this, variable);
+      addProperty(generator);
     }
   }
 }

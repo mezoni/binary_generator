@@ -19,7 +19,7 @@ class ForeignFunctionGenerator extends DeclarationGenerator {
 ''';
 
   static final String _templateBody = '''
-return $_LIBRARY.invoke("{{NAME}}", [{{ARGUMENTS}}]);''';
+return $_LIBRARY.invoke("{{SYMBOL_NAME}}", [{{ARGUMENTS}}]);''';
 
   static final String _templateBodyVariadic = '''
 var arguments = [{{ARGUMENTS}}];
@@ -27,13 +27,15 @@ if ({{PARAMS_NAME}} != null) {
   arguments.addAll({{PARAMS_NAME}});
 }
 
-return $_LIBRARY.invoke("{{NAME}}", arguments);''';
+return $_LIBRARY.invoke("{{SYMBOL_NAME}}", arguments);''';
 
   final ClassLibraryGenerator classGenerator;
 
   final Prototype prototype;
 
   String _name;
+
+  String _symbolName;
 
   TypeHelper _typeHelper;
 
@@ -42,7 +44,8 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
       throw new ArgumentError.notNull("classGenerator");
     }
 
-    _name = prototype.type.identifier;
+    _symbolName = prototype.type.identifier;
+    _name = _symbolName;
     if (_name.startsWith("_")) {
       _name = "\$$name";
     }
@@ -104,7 +107,7 @@ return $_LIBRARY.invoke("{{NAME}}", arguments);''';
     }
 
     blockBody.assign("ARGUMENTS", arguments.join(", "));
-    blockBody.assign("NAME", name);
+    blockBody.assign("SYMBOL_NAME", _symbolName);
 
     //
     block.assign("#BODY", blockBody.process());
