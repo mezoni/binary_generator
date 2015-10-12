@@ -36,6 +36,7 @@ class ClassLibraryGenerator extends ClassGenerator {
     }
 
     _generateConstants(filenames, helper, typeHelper);
+    _generateVariables(filenames, helper, typeHelper);
     // Constructor
     addConstructor(new ConstructorGenerator(this, _options));
     // LIBRARY
